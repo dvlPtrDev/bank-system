@@ -1,0 +1,5 @@
+.* # arquivos ocultos
+databases/*.db # banco de dados sqlite
+out/* # objetos
+
+
