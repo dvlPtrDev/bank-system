@@ -3,8 +3,8 @@ CC = gcc
 SRC_DIR = src
 OUT_DIR = out
 
-SRC = $(wildcard $(SRC_DIR)/*.c)
-obj = $(SRC: $(SRC_DIR)/%.c=$(OUT_DIR/%.o))
+SRC = $(shell find $(SRC_DIR) -name "*.c")
+OBJ = $(addprefix $(OUT_DIR)/,$(notdir $(SRC:.c=.o)))
 
 CFLAGS = -I../lib/strlib/include \
          -I../lib/sqlitelib/include \
@@ -17,14 +17,17 @@ LIBS = -l:libstr.a -lsqlite -lsqlite3
 
 TARGET = bank
 
-all: $(TARGET)
+all: run
+run: $(TARGET)
+	./$(OUT_DIR)/$(TARGET)
 
 $(TARGET): $(OBJ)
-	$(CC) $(OBJ) -o $(OUT_DIR)/$(TARGET) $(LDFLAGS) $(LIBS)
+	$(CC) $^ -o $(OUT_DIR)/$(TARGET) $(LDFLAGS) $(LIBS)
 
-$(OUT_DIR)/%.o: $(SRC_DIR)/%.c
+$(OUT_DIR)/%.o:
 	mkdir -p $(OUT_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $(shell find $(SRC_DIR) -name $*.c) -o $@
 
+	
 clean:
-	rm -rf $(OUT_DIR) $(TARGET)
+	rm -rf $(OUT_DIR)
